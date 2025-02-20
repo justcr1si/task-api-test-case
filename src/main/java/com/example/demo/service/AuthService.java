@@ -17,7 +17,7 @@ public class AuthService {
     private final UserService userService;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
+    private final AuthenticationManager authManager;
 
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
 
@@ -35,7 +35,7 @@ public class AuthService {
     }
 
     public JwtAuthenticationResponse signIn(SignInRequest request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+        authManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getEmail(),
                 request.getPassword()
         ));
