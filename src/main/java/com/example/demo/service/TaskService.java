@@ -8,6 +8,7 @@ import com.example.demo.repository.TaskRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.schema.TaskRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +16,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TaskService {
+    @Autowired
     private TaskRepository taskRepository;
+    @Autowired
     private UserRepository userRepository;
 
     public Task createTask(TaskRequest taskRequest, Long authorId, Long assigneeId) {
@@ -44,11 +47,24 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    public List<Task> getTasksByAssignee(Long assigneeId) {
+    public Task getTaskById(Long taskId) {
+        return taskRepository.findById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found"));
+    }
+
+    public void deleteTaskById(Long taskId) {
+        taskRepository.deleteById(taskId);
+    }
+
+    public List<Task> getTasksByAssigneeId(Long assigneeId) {
         return taskRepository.findByAssigneeId(assigneeId);
     }
 
-    public List<Task> getTasksByAuthor(Long authorId) {
+    public List<Task> getTasksByAuthorId(Long authorId) {
         return taskRepository.findByAuthorId(authorId);
+    }
+
+    public List<Task> getAllTasks() {
+        return taskRepository.findAll();
     }
 }

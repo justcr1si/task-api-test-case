@@ -14,11 +14,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final CustomUserDetailsService userDetails;
-
-    public User saveUser(User user) {
-        return userRepository.save(user);
-    }
 
     public User createUser(User user) {
         if (userRepository.existsByUsername(user.getUsername())) {
@@ -32,8 +27,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username)
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Username not found"));
     }
 
@@ -42,8 +37,9 @@ public class UserService {
     }
 
     public User getCurrentUser() {
-        var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return getUserByUsername(username);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var email = user.getEmail();
+        return getUserByEmail(email);
     }
 
 
