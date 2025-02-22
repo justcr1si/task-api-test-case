@@ -1,9 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.models.Task;
 import com.example.demo.schema.TaskRequest;
+import com.example.demo.schema.TaskResponse;
 import com.example.demo.service.TaskService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,25 +19,25 @@ public class TaskController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Task> createTask(@RequestBody TaskRequest taskRequest,
+    public ResponseEntity<TaskResponse> createTask(@RequestBody TaskRequest taskRequest,
                                            @RequestParam Long authorId,
                                            @RequestParam Long assigneeId) {
-        Task task = taskService.createTask(taskRequest, authorId, assigneeId);
+        TaskResponse task = taskService.createTask(taskRequest, authorId, assigneeId);
         return ResponseEntity.status(HttpStatus.CREATED).body(task);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody TaskRequest taskRequest) {
-        Task task = taskService.updateTask(id, taskRequest);
-        return ResponseEntity.ok(task);
+    public ResponseEntity<TaskResponse> updateTask(@PathVariable Long id, @RequestBody TaskRequest taskRequest) {
+        TaskResponse taskResponse = taskService.updateTask(id, taskRequest);
+        return ResponseEntity.ok(taskResponse);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-    public ResponseEntity<Task> getTask(@PathVariable Long id) {
-        Task task = taskService.getTaskById(id);
-        return ResponseEntity.ok(task);
+    public ResponseEntity<TaskResponse> getTask(@PathVariable Long id) {
+        TaskResponse taskResponse = taskService.getTaskById(id);
+        return ResponseEntity.ok(taskResponse);
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -50,22 +49,22 @@ public class TaskController {
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping
-    public ResponseEntity<List<Task>> getAllTasks() {
-        List<Task> tasks = taskService.getAllTasks();
+    public ResponseEntity<List<TaskResponse>> getAllTasks() {
+        List<TaskResponse> tasks = taskService.getAllTasks();
         return ResponseEntity.ok(tasks);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/author")
-    public ResponseEntity<List<Task>> getAllTasksByAuthorId(@RequestParam Long authorId) {
-        List<Task> tasks = taskService.getTasksByAuthorId(authorId);
+    public ResponseEntity<List<TaskResponse>> getAllTasksByAuthorId(@RequestParam Long authorId) {
+        List<TaskResponse> tasks = taskService.getTasksByAuthorId(authorId);
         return ResponseEntity.ok(tasks);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/assignee")
-    public ResponseEntity<List<Task>> getAllTasksByAssigneeId(@RequestParam Long assigneeId) {
-        List<Task> tasks = taskService.getTasksByAssigneeId(assigneeId);
+    public ResponseEntity<List<TaskResponse>> getAllTasksByAssigneeId(@RequestParam Long assigneeId) {
+        List<TaskResponse> tasks = taskService.getTasksByAssigneeId(assigneeId);
         return ResponseEntity.ok(tasks);
     }
 }
