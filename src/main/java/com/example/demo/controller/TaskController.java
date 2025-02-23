@@ -1,27 +1,30 @@
 package com.example.demo.controller;
 
+import com.example.demo.models.User;
 import com.example.demo.schema.TaskRequest;
 import com.example.demo.schema.TaskResponse;
 import com.example.demo.service.TaskService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/tasks")
+@RequiredArgsConstructor
 public class TaskController {
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
 
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<TaskResponse> createTask(@RequestBody TaskRequest taskRequest,
-                                           @RequestParam Long authorId,
-                                           @RequestParam Long assigneeId) {
+                                                   @RequestParam Long authorId,
+                                                   @RequestParam Long assigneeId) {
         TaskResponse task = taskService.createTask(taskRequest, authorId, assigneeId);
         return ResponseEntity.status(HttpStatus.CREATED).body(task);
     }
@@ -29,7 +32,16 @@ public class TaskController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<TaskResponse> updateTask(@PathVariable Long id, @RequestBody TaskRequest taskRequest) {
-        TaskResponse taskResponse = taskService.updateTask(id, taskRequest);
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        TaskResponse taskResponse;
+        if (!currentUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+            taskResponse = taskService.getTaskById(id);
+            if (taskResponse.getAuthorUsername().equals(currentUser.getUsername())) {
+                taskService.updateTask(id, taskRequest);
+                return ResponseEntity.ok(taskResponse);
+            }
+        }
+        taskResponse = taskService.updateTask(id, taskRequest);
         return ResponseEntity.ok(taskResponse);
     }
 

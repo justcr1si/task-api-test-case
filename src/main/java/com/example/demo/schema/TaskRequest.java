@@ -5,10 +5,12 @@ import com.example.demo.models.TaskStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Schema(description = "Таск-запрос, содержащий основные поля при создании таски")
 @Data
+@AllArgsConstructor
 public class TaskRequest {
     private String title;
     private String description;

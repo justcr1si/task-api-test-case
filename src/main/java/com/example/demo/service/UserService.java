@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.exceptions.UserAlreadyExistsException;
+import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.models.Role;
 import com.example.demo.models.User;
 import com.example.demo.repository.UserRepository;
@@ -16,12 +18,8 @@ public class UserService {
     private final UserRepository userRepository;
 
     public User createUser(User user) {
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("Username already exists");
-        }
-
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Email already exists");
+        if (userRepository.existsByUsername(user.getUsername()) || userRepository.existsByEmail(user.getEmail())) {
+            throw new UserAlreadyExistsException("User already exists");
         }
 
         return userRepository.save(user);
@@ -29,7 +27,7 @@ public class UserService {
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Username not found"));
+                .orElseThrow(() -> new UserNotFoundException("Username not found"));
     }
 
     public UserDetailsService getUserDetailsService() {

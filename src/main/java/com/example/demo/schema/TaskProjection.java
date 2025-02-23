@@ -1,7 +1,10 @@
 package com.example.demo.schema;
 
+import com.example.demo.models.Comment;
 import com.example.demo.models.TaskPriority;
 import com.example.demo.models.TaskStatus;
+
+import java.util.List;
 
 public interface TaskProjection {
     Long getId();
@@ -17,4 +20,6 @@ public interface TaskProjection {
     String getAuthorUsername();
 
     String getAssigneeUsername();
+
+    List<CommentResponse> getAllComments();
 }

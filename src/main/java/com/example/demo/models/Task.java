@@ -3,6 +3,8 @@ package com.example.demo.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "tasks")
 @Getter
@@ -36,4 +38,7 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "assignee_id")
     private User assignee;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
 }
