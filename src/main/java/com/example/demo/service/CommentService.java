@@ -80,4 +80,8 @@ public class CommentService {
                 .createdAt(comment.getCreatedAt())
                 .build();
     }
+
+    public CommentResponse getCommentById(Long commentId) {
+        return commentRepository.findCommentsById(commentId);
+    }
 }

@@ -37,9 +37,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        if (request.getRequestURI().startsWith("/swagger-ui") ||
+                request.getRequestURI().startsWith("/v3/api-docs") ||
+                request.getRequestURI().startsWith("/swagger-resources") ||
+                request.getRequestURI().startsWith("/webjars")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         var authHeader = request.getHeader(HEADER_STRING);
 
-        if (authHeader == null || authHeader.isEmpty() || !authHeader.startsWith(BEARER_PREFIX)) {
+        if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }

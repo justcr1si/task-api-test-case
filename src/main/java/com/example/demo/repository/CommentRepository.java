@@ -14,4 +14,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "c.createdAt AS createdAt, c.author.username AS authorUsername " +
             "FROM Comment c")
     List<CommentProjection> findAllProjectedComments();
+
+    CommentResponse findCommentsById(Long id);
 }
