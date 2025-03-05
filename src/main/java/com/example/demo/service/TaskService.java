@@ -4,6 +4,7 @@ import com.example.demo.exceptions.TaskNotFoundException;
 import com.example.demo.exceptions.UserNotFoundException;
 import com.example.demo.models.Comment;
 import com.example.demo.models.Task;
+import com.example.demo.models.TaskStatus;
 import com.example.demo.models.User;
 import com.example.demo.repository.TaskRepository;
 import com.example.demo.repository.UserRepository;
@@ -12,6 +13,10 @@ import com.example.demo.schema.TaskRequest;
 import com.example.demo.schema.TaskResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -49,16 +54,7 @@ public class TaskService {
         task.setPriority(taskRequest.getPriority());
         task.setStatus(taskRequest.getStatus());
         taskRepository.save(task);
-        List<CommentResponse> commentResponseList = new ArrayList<>();
-        for (Comment comment : task.getComments()) {
-            commentResponseList.add(CommentResponse.builder()
-                            .id(comment.getId())
-                            .text(comment.getText())
-                            .taskTitle(comment.getTask().getTitle())
-                            .authorUsername(comment.getAuthor().getUsername())
-                            .createdAt(comment.getCreatedAt())
-                            .build());
-        }
+
         return TaskResponse.builder()
                 .id(task.getId())
                 .title(task.getTitle())
@@ -67,7 +63,16 @@ public class TaskService {
                 .priority(task.getPriority())
                 .authorUsername(task.getAuthor().getUsername())
                 .assigneeUsername(task.getAssignee().getUsername())
-                .comments(commentResponseList)
+                .comments(task.getComments()
+                        .stream()
+                        .map(comment -> new CommentResponse(
+                                comment.getId(),
+                                comment.getText(),
+                                comment.getTask().getTitle(),
+                                comment.getAuthor().getUsername(),
+                                comment.getCreatedAt()
+                        )).collect(Collectors.toList())
+                )
                 .build();
     }
 
@@ -78,17 +83,6 @@ public class TaskService {
         task.setPriority(taskRequest.getPriority());
         taskRepository.save(task);
 
-        List<CommentResponse> commentResponseList = new ArrayList<>();
-        for (Comment comment : task.getComments()) {
-            commentResponseList.add(CommentResponse.builder()
-                    .id(comment.getId())
-                    .text(comment.getText())
-                    .taskTitle(comment.getTask().getTitle())
-                    .authorUsername(comment.getAuthor().getUsername())
-                    .createdAt(comment.getCreatedAt())
-                    .build());
-        }
-
         return TaskResponse.builder()
                 .id(task.getId())
                 .title(task.getTitle())
@@ -97,7 +91,16 @@ public class TaskService {
                 .priority(task.getPriority())
                 .authorUsername(task.getAuthor().getUsername())
                 .assigneeUsername(task.getAssignee().getUsername())
-                .comments(commentResponseList)
+                .comments(task.getComments()
+                        .stream()
+                        .map(comment -> new CommentResponse(
+                                comment.getId(),
+                                comment.getText(),
+                                comment.getTask().getTitle(),
+                                comment.getAuthor().getUsername(),
+                                comment.getCreatedAt()
+                        )).collect(Collectors.toList())
+                )
                 .build();
     }
 
@@ -139,17 +142,59 @@ public class TaskService {
     }
 
     public List<TaskResponse> getAllTasks() {
-        return taskRepository.findAllProjectedTasks().stream()
+        return taskRepository.findAll().stream()
                 .map(task -> new TaskResponse(
                         task.getId(),
                         task.getTitle(),
                         task.getDescription(),
                         task.getStatus(),
                         task.getPriority(),
-                        task.getAuthorUsername(),
-                        task.getAssigneeUsername(),
-                        task.getAllComments()
+                        task.getAuthor().getUsername(),
+                        task.getAssignee().getUsername(),
+                        task.getComments().stream()
+                                .map(comment -> new CommentResponse(
+                                        comment.getId(),
+                                        comment.getText(),
+                                        comment.getTask().getTitle(),
+                                        comment.getAuthor().getUsername(),
+                                        comment.getCreatedAt()
+                                )).collect(Collectors.toList())
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public Page<TaskResponse> getTasks(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Task> taskPage = taskRepository.findAll(pageable);
+
+        return getTaskPage(taskPage);
+    }
+
+    public Page<TaskResponse> getTasksByStatus(String status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        TaskStatus taskStatus = TaskStatus.valueOf(status);
+        Page<Task> taskPage = taskRepository.findByStatus(taskStatus, pageable);
+
+        return getTaskPage(taskPage);
+    }
+
+    private Page<TaskResponse> getTaskPage(Page<Task> taskPage) {
+        return taskPage.map(task -> new TaskResponse(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus(),
+                task.getPriority(),
+                task.getAuthor().getUsername(),
+                task.getAssignee().getUsername(),
+                task.getComments().stream()
+                        .map(comment -> new CommentResponse(
+                                comment.getId(),
+                                comment.getText(),
+                                comment.getTask().getTitle(),
+                                comment.getAuthor().getUsername(),
+                                comment.getCreatedAt()
+                        )).collect(Collectors.toList())
+        ));
     }
 }

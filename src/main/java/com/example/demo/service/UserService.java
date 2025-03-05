@@ -17,12 +17,12 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
 
-    public User createUser(User user) {
+    public void createUser(User user) {
         if (userRepository.existsByUsername(user.getUsername()) || userRepository.existsByEmail(user.getEmail())) {
             throw new UserAlreadyExistsException("User already exists");
         }
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     public User getUserByEmail(String email) {

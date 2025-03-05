@@ -8,6 +8,7 @@ import com.example.demo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -95,6 +96,14 @@ public class TaskController {
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @GetMapping("/pagination")
+    @Operation(summary = "Получение тасок и пагинация")
+    public ResponseEntity<Page<TaskResponse>> getTasks(@RequestParam(defaultValue = "0") int page,
+                                                       @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(taskService.getTasks(page, size));
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/author")
     @Operation(summary = "Получение всех тасок по authorId")
     public ResponseEntity<List<TaskResponse>> getAllTasksByAuthorId(@RequestParam Long authorId) {
@@ -108,5 +117,14 @@ public class TaskController {
     public ResponseEntity<List<TaskResponse>> getAllTasksByAssigneeId(@RequestParam Long assigneeId) {
         List<TaskResponse> tasks = taskService.getTasksByAssigneeId(assigneeId);
         return ResponseEntity.ok(tasks);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @GetMapping("/filter")
+    @Operation(summary = "Фильтрация задач по статусу")
+    public ResponseEntity<Page<TaskResponse>> getAllTasksByStatus(@RequestParam String status,
+                                                                  @RequestParam(defaultValue = "0") int page,
+                                                                  @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(taskService.getTasksByStatus(status, page, size));
     }
 }

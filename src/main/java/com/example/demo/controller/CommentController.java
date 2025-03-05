@@ -9,6 +9,7 @@ import com.example.demo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,14 +28,27 @@ public class CommentController {
     private final CommentService commentService;
     private final UserService userService;
 
-    @GetMapping
+    @GetMapping("/task")
     @Operation(summary = "Получение комментария по ID")
     public ResponseEntity<List<CommentResponse>> getCommentsByTaskId(@RequestParam Long taskId) {
         return ResponseEntity.ok(commentService.getCommentsByTaskId(taskId));
     }
 
+    @GetMapping
+    @Operation(summary = "Получение всех комментариев")
+    public ResponseEntity<List<CommentResponse>> getAllComments() {
+        return ResponseEntity.ok(commentService.getAllComments());
+    }
+
+    @GetMapping("/pagination")
+    @Operation(summary = "Получение комментариев и пагинация")
+    public ResponseEntity<Page<CommentResponse>> getComments(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(commentService.getComments(page, size));
+    }
+
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-    @PostMapping("/leave-comment/")
+    @PostMapping
     @Operation(summary = "Оставление комментария к таске по taskId и CommentRequest")
     public ResponseEntity<TaskResponse> leaveComment(@RequestParam Long taskId, @RequestBody CommentRequest commentRequest) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

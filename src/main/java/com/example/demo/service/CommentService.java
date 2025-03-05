@@ -12,6 +12,10 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.schema.CommentRequest;
 import com.example.demo.schema.CommentResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,12 +52,12 @@ public class CommentService {
     }
 
     public List<CommentResponse> getAllComments() {
-        return commentRepository.findAllProjectedComments().stream()
+        return commentRepository.findAll().stream()
                 .map(comment -> CommentResponse.builder()
                         .id(comment.getId())
                         .text(comment.getText())
-                        .taskTitle(comment.getTaskTitle())
-                        .authorUsername(comment.getAuthorUsername())
+                        .taskTitle(comment.getTask().getTitle())
+                        .authorUsername(comment.getAuthor().getUsername())
                         .createdAt(comment.getCreatedAt())
                         .build())
                 .collect(Collectors.toList());
@@ -81,7 +85,24 @@ public class CommentService {
                 .build();
     }
 
+    public Page<CommentResponse> getComments(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Comment> taskPage = commentRepository.findAll(pageable);
+
+        return getCommentPage(taskPage);
+    }
+
     public CommentResponse getCommentById(Long commentId) {
         return commentRepository.findCommentsById(commentId);
+    }
+
+    private Page<CommentResponse> getCommentPage(Page<Comment> commentPage) {
+        return commentPage.map(comment -> new CommentResponse(
+                comment.getId(),
+                comment.getText(),
+                comment.getTask().getTitle(),
+                comment.getAuthor().getUsername(),
+                comment.getCreatedAt()
+        ));
     }
 }
