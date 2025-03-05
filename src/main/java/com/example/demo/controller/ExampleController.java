@@ -19,12 +19,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class ExampleController {
     private final UserService service;
 
+    /**
+     * Тестовый метод
+     * @return
+     */
     @GetMapping
     @Operation(summary = "Доступен только авторизованным пользователям")
     public String example() {
         return "Hello, world!";
     }
 
+    /**
+     * Тестовый метод, доступный только админам
+     * @return
+     */
     @GetMapping("/admin")
     @Operation(summary = "Доступен только авторизованным пользователям с ролью ADMIN")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -34,6 +42,10 @@ public class ExampleController {
         return "Hello, admin!";
     }
 
+    /**
+     * Тестовый метод, служащий для получения админки
+     * @return
+     */
     @GetMapping("/get-admin")
     @Operation(summary = "Получить роль ADMIN (для демонстрации)")
     public ResponseEntity<String> getAdmin() {

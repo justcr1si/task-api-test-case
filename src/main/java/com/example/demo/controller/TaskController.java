@@ -32,9 +32,9 @@ public class TaskController {
 
     /**
      * Метод по созданию таски
-     * @param taskRequest
-     * @param authorId
-     * @param assigneeId
+     * @param taskRequest таск-запрос, состоящий из title, description, status, priority
+     * @param authorId айдишник автора
+     * @param assigneeId айдишник исполнителя
      * @return
      */
     @PostMapping
@@ -49,8 +49,8 @@ public class TaskController {
 
     /**
      * Метод по обновлению таски
-     * @param id
-     * @param taskRequest
+     * @param id айди таски
+     * @param taskRequest таск-запрос, состоящий из title, description, status, priority
      * @return
      */
     @PutMapping("/{id}")
@@ -76,7 +76,7 @@ public class TaskController {
 
     /**
      * Метод по получению таски по ее айдишнику
-     * @param id
+     * @param id айди таски
      * @return
      */
     @GetMapping("/{id}")
@@ -89,7 +89,7 @@ public class TaskController {
 
     /**
      * Метод по удалению таски по ее айдишнику
-     * @param id
+     * @param id айди таски
      * @return
      */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
@@ -128,8 +128,8 @@ public class TaskController {
     /**
      * Метод по получению всех тасок с пагинацией
      * Для большего понимания прикреплено url /pagination
-     * @param page
-     * @param size
+     * @param page номер страницы
+     * @param size количество комментов, которые отобразятся
      * @return
      */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
@@ -142,7 +142,7 @@ public class TaskController {
 
     /**
      * Метод по получению всех тасок по айдишнику автора
-     * @param authorId
+     * @param authorId айдишник автора
      * @return
      */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
@@ -155,7 +155,7 @@ public class TaskController {
 
     /**
      * Метод по получению всех тасок по айдишнику исполнителя
-     * @param assigneeId
+     * @param assigneeId айдишник исполнителя
      * @return
      */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
@@ -168,9 +168,9 @@ public class TaskController {
 
     /**
      * Метод, осуществляющий фильтрацию задач по статусу
-     * @param status
-     * @param page
-     * @param size
+     * @param status статус задачи
+     * @param page номер страницы
+     * @param size количество комментов, которые отобразятся
      * @return
      */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")

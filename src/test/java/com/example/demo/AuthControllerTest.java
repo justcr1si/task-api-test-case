@@ -1,37 +1,40 @@
 package com.example.demo;
 
-import com.example.demo.exceptions.UserAlreadyExistsException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.demo.controller.AuthController;
 import com.example.demo.schema.JwtAuthenticationResponse;
 import com.example.demo.schema.SignInRequest;
 import com.example.demo.schema.SignUpRequest;
 import com.example.demo.service.AuthService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-@AutoConfigureMockMvc
 class AuthControllerTest {
 
-    @Autowired
+    @Mock
+    private AuthService authService;
+
     private MockMvc mockMvc;
 
-    @MockitoBean
-    private AuthService authService;
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(new AuthController(authService)).build();
+    }
 
     @Test
     void signUp_Success() throws Exception {

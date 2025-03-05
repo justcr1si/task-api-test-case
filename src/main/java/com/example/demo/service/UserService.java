@@ -12,11 +12,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+/**
+ * Сервис, отвечающий за бизнес-логику по юзеру
+ */
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
 
+    /**
+     * Метод, создающий юзера
+     * @param user юзер
+     */
     public void createUser(User user) {
         if (userRepository.existsByUsername(user.getUsername()) || userRepository.existsByEmail(user.getEmail())) {
             throw new UserAlreadyExistsException("User already exists");
@@ -25,15 +32,28 @@ public class UserService {
         userRepository.save(user);
     }
 
+    /**
+     * Метод, получающий юзера по почте
+     * @param email почта
+     * @return
+     */
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
+    /**
+     * Метод, получающий userDetails
+     * @return
+     */
     public UserDetailsService getUserDetailsService() {
         return new CustomUserDetailsService(userRepository);
     }
 
+    /**
+     * Метод получения текущего юзера по запросу
+     * @return
+     */
     public User getCurrentUser() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var email = user.getEmail();
@@ -42,6 +62,12 @@ public class UserService {
 
 
     // TEST
+
+    /**
+     * Метод, служащий получению админки, неактуальный, тестовый
+     * @return
+     * @deprecated исключительно для тестов, в реальной среде будет удален
+     */
     @Deprecated
     public ResponseEntity<String> getAdmin() {
         var user = getCurrentUser();

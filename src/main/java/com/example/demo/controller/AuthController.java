@@ -21,6 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthService authService;
 
+    /**
+     * Метод, отвечающий за регистрацию
+     * @param signUpRequest запрос на регистрацию, содержащий логин, почту и пароль
+     * @return
+     */
     @PostMapping("/sign-up")
     @Operation(summary = "Регистрация пользователя")
     public ResponseEntity<JwtAuthenticationResponse> signUp(@RequestBody SignUpRequest signUpRequest) {
@@ -28,6 +33,11 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(token);
     }
 
+    /**
+     * Метод, отвечающий за аутентификацию и авторизацию
+     * @param signInRequest запрос на логин, содержащий почту и пароль
+     * @return
+     */
     @PostMapping("/sign-in")
     @Operation(summary = "Авторизация пользователя")
     public ResponseEntity<JwtAuthenticationResponse> signIn(@RequestBody SignInRequest signInRequest) {
