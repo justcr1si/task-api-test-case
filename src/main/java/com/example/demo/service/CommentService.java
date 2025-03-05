@@ -21,6 +21,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис по обработке комментариев
+ */
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -28,6 +31,13 @@ public class CommentService {
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
 
+    /**
+     * Метод по созданию комментария
+     * @param commentRequest
+     * @param authorId
+     * @param taskId
+     * @return
+     */
     public CommentResponse addComment(CommentRequest commentRequest, Long authorId, Long taskId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found"));
@@ -51,6 +61,10 @@ public class CommentService {
                 .build();
     }
 
+    /**
+     * Метод по получению всех комментариев
+     * @return
+     */
     public List<CommentResponse> getAllComments() {
         return commentRepository.findAll().stream()
                 .map(comment -> CommentResponse.builder()
@@ -63,14 +77,29 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Метод по получению комментариев по айдишнику таски
+     * @param taskId
+     * @return
+     */
     public List<CommentResponse> getCommentsByTaskId(Long taskId) {
         return commentRepository.findByTaskId(taskId);
     }
 
+    /**
+     * Метод по удалению комментария по айдишнику
+     * @param commentId
+     */
     public void deleteComment(Long commentId) {
         commentRepository.deleteById(commentId);
     }
 
+    /**
+     * Метод по обновлению комментария
+     * @param commentId
+     * @param commentRequest
+     * @return
+     */
     public CommentResponse updateComment(Long commentId, CommentRequest commentRequest) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException("Comment not found"));
@@ -85,6 +114,12 @@ public class CommentService {
                 .build();
     }
 
+    /**
+     * Пагинация комментариев
+     * @param page
+     * @param size
+     * @return
+     */
     public Page<CommentResponse> getComments(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Comment> taskPage = commentRepository.findAll(pageable);
@@ -92,10 +127,20 @@ public class CommentService {
         return getCommentPage(taskPage);
     }
 
+    /**
+     * Метод по получению комментария по его айдишнику
+     * @param commentId
+     * @return
+     */
     public CommentResponse getCommentById(Long commentId) {
         return commentRepository.findCommentsById(commentId);
     }
 
+    /**
+     * Приватный метод по получению пейджа, содержащий CommentResponse
+     * @param commentPage
+     * @return
+     */
     private Page<CommentResponse> getCommentPage(Page<Comment> commentPage) {
         return commentPage.map(comment -> new CommentResponse(
                 comment.getId(),

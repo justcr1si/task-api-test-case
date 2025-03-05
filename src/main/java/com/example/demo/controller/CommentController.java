@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Контроллер, обрабатывающий работу с комментариями
+ */
 @RestController
 @RequestMapping("/comments")
 @RequiredArgsConstructor
@@ -28,18 +31,34 @@ public class CommentController {
     private final CommentService commentService;
     private final UserService userService;
 
+    /**
+     * Метод по получению комментариев по айдишнику задачи
+     * @param taskId
+     * @return
+     */
     @GetMapping("/task")
-    @Operation(summary = "Получение комментария по ID")
+    @Operation(summary = "Получение комментариев по ID")
     public ResponseEntity<List<CommentResponse>> getCommentsByTaskId(@RequestParam Long taskId) {
         return ResponseEntity.ok(commentService.getCommentsByTaskId(taskId));
     }
 
+    /**
+     * Метод по получению всех комментариев
+     * @return
+     */
     @GetMapping
     @Operation(summary = "Получение всех комментариев")
     public ResponseEntity<List<CommentResponse>> getAllComments() {
         return ResponseEntity.ok(commentService.getAllComments());
     }
 
+    /**
+     * Пагинация комментариев
+     * Для большего понимания прикреплено url /pagination
+     * @param page
+     * @param size
+     * @return
+     */
     @GetMapping("/pagination")
     @Operation(summary = "Получение комментариев и пагинация")
     public ResponseEntity<Page<CommentResponse>> getComments(@RequestParam(defaultValue = "0") int page,
@@ -47,6 +66,12 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getComments(page, size));
     }
 
+    /**
+     * Метод по созданию комментария
+     * @param taskId
+     * @param commentRequest
+     * @return
+     */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping
     @Operation(summary = "Оставление комментария к таске по taskId и CommentRequest")
@@ -58,6 +83,11 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    /**
+     * Метод по удалению комментария по айди
+     * @param commentId
+     * @return
+     */
     @DeleteMapping
     @Operation(summary = "Удаление комментария по ID")
     public ResponseEntity<Void> deleteComment(@RequestParam Long commentId) {
@@ -82,6 +112,12 @@ public class CommentController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Метод по обновлению комментария
+     * @param commentId
+     * @param commentRequest
+     * @return
+     */
     @PutMapping
     @Operation(summary = "Обновление комментария по ID")
     public ResponseEntity<CommentResponse> updateComment(@RequestParam Long commentId, @RequestBody CommentRequest commentRequest) {

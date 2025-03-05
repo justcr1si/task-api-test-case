@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Контроллер, обрабатывающий работу с тасками
+ */
 @RestController
 @RequestMapping("/tasks")
 @RequiredArgsConstructor
@@ -27,6 +30,13 @@ public class TaskController {
     private final TaskService taskService;
     private final UserService userService;
 
+    /**
+     * Метод по созданию таски
+     * @param taskRequest
+     * @param authorId
+     * @param assigneeId
+     * @return
+     */
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @Operation(summary = "Создание таски по TaskRequest, authorId, assigneeId")
@@ -37,6 +47,12 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.CREATED).body(task);
     }
 
+    /**
+     * Метод по обновлению таски
+     * @param id
+     * @param taskRequest
+     * @return
+     */
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "Обновление таски по ID и TaskRequest")
@@ -58,6 +74,11 @@ public class TaskController {
         return ResponseEntity.ok(taskResponse);
     }
 
+    /**
+     * Метод по получению таски по ее айдишнику
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @Operation(summary = "Получение таски по ID")
@@ -66,7 +87,12 @@ public class TaskController {
         return ResponseEntity.ok(taskResponse);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    /**
+     * Метод по удалению таски по ее айдишнику
+     * @param id
+     * @return
+     */
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @DeleteMapping("/{id}")
     @Operation(summary = "Удаление таски по ID")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
@@ -87,6 +113,10 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Метод по получению всех тасок
+     * @return
+     */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping
     @Operation(summary = "Получение всех тасок")
@@ -95,6 +125,13 @@ public class TaskController {
         return ResponseEntity.ok(tasks);
     }
 
+    /**
+     * Метод по получению всех тасок с пагинацией
+     * Для большего понимания прикреплено url /pagination
+     * @param page
+     * @param size
+     * @return
+     */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/pagination")
     @Operation(summary = "Получение тасок и пагинация")
@@ -103,6 +140,11 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getTasks(page, size));
     }
 
+    /**
+     * Метод по получению всех тасок по айдишнику автора
+     * @param authorId
+     * @return
+     */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/author")
     @Operation(summary = "Получение всех тасок по authorId")
@@ -111,6 +153,11 @@ public class TaskController {
         return ResponseEntity.ok(tasks);
     }
 
+    /**
+     * Метод по получению всех тасок по айдишнику исполнителя
+     * @param assigneeId
+     * @return
+     */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/assignee")
     @Operation(summary = "Получение всех тасок по assigneeId")
@@ -119,6 +166,13 @@ public class TaskController {
         return ResponseEntity.ok(tasks);
     }
 
+    /**
+     * Метод, осуществляющий фильтрацию задач по статусу
+     * @param status
+     * @param page
+     * @param size
+     * @return
+     */
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/filter")
     @Operation(summary = "Фильтрация задач по статусу")

@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Таск-сервис по обработке комментариев
+ */
 @Service
 @RequiredArgsConstructor
 public class TaskService {
@@ -31,6 +34,13 @@ public class TaskService {
     @Autowired
     private UserRepository userRepository;
 
+    /**
+     * Метод по созданию таски
+     * @param taskRequest
+     * @param authorId
+     * @param assigneeId
+     * @return
+     */
     public TaskResponse createTask(TaskRequest taskRequest, Long authorId, Long assigneeId) {
         User author;
         User assignee;
@@ -76,6 +86,12 @@ public class TaskService {
                 .build();
     }
 
+    /**
+     * Метод по обновлению таски
+     * @param taskId
+     * @param taskRequest
+     * @return
+     */
     public TaskResponse updateTask(Long taskId, TaskRequest taskRequest) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found"));
@@ -104,6 +120,11 @@ public class TaskService {
                 .build();
     }
 
+    /**
+     * Метод по получению таски по ее айдишнику
+     * @param taskId
+     * @return
+     */
     public TaskResponse getTaskById(Long taskId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found"));
@@ -129,18 +150,36 @@ public class TaskService {
                 .build();
     }
 
+    /**
+     * Метод по удалению таски по ее айдишнику
+     * @param taskId
+     */
     public void deleteTaskById(Long taskId) {
         taskRepository.deleteById(taskId);
     }
 
+    /**
+     * Метод по получению тасок по айдишнику исполнителя
+     * @param assigneeId
+     * @return
+     */
     public List<TaskResponse> getTasksByAssigneeId(Long assigneeId) {
         return taskRepository.findByAssigneeId(assigneeId);
     }
 
+    /**
+     * Метод по получению тасок по айдишнику автора
+     * @param authorId
+     * @return
+     */
     public List<TaskResponse> getTasksByAuthorId(Long authorId) {
         return taskRepository.findByAuthorId(authorId);
     }
 
+    /**
+     * Метод по получению всех тасок
+     * @return
+     */
     public List<TaskResponse> getAllTasks() {
         return taskRepository.findAll().stream()
                 .map(task -> new TaskResponse(
@@ -163,6 +202,12 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Метод, осуществляющий пагинацию и сортировку по айдишнику в убывающем порядке
+     * @param page
+     * @param size
+     * @return
+     */
     public Page<TaskResponse> getTasks(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Task> taskPage = taskRepository.findAll(pageable);
@@ -170,6 +215,13 @@ public class TaskService {
         return getTaskPage(taskPage);
     }
 
+    /**
+     * Метод по получению тасок относительно статуса с пагинацией
+     * @param status
+     * @param page
+     * @param size
+     * @return
+     */
     public Page<TaskResponse> getTasksByStatus(String status, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         TaskStatus taskStatus = TaskStatus.valueOf(status);
@@ -178,6 +230,11 @@ public class TaskService {
         return getTaskPage(taskPage);
     }
 
+    /**
+     * Метод по получению пейджа, содержащий TaskResponse
+     * @param taskPage
+     * @return
+     */
     private Page<TaskResponse> getTaskPage(Page<Task> taskPage) {
         return taskPage.map(task -> new TaskResponse(
                 task.getId(),
