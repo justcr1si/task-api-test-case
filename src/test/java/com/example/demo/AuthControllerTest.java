@@ -1,3 +1,4 @@
+// FIXME: наименование package должно соответствовать проекту. Предлагаю com.github.{твой гитхаб аккаунт}
 package com.example.demo;
 
 import com.example.demo.controller.AuthController;

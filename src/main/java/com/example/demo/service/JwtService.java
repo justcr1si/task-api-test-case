@@ -49,6 +49,9 @@ public class JwtService {
         return claimsResolvers.apply(claims);
     }
 
+    // FIXME: Тут все вызываемые методы горят жёлтым, как Deprecated.
+    //  Судя по test-coverage(можно запускать тесты с отображением что покрыто, что нет), не покрыт тестами
+    //  Перед рефакторингом, если будешь делать, надо сначала добиться покрытия, потом только рефачить
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
