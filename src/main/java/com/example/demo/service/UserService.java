@@ -42,6 +42,10 @@ public class UserService {
 
 
     // TEST
+    /**
+     * FIXME: помечено, как Deprecated, либо убрать аннотацию, либо написать reason
+     * @deprecated <--
+     */
     @Deprecated
     public ResponseEntity<String> getAdmin() {
         var user = getCurrentUser();

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+// FIXME: не используется? Тогда убрать. Если под капотом как-то спрингом подтягивается, тогда норм
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(CommentNotFoundException.class)

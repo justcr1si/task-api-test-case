@@ -16,7 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest; // FIXME: неиспользованные импорты. Ctrl + Alt + O. И
+// надо бы линтер прикрутить, чтобы он такие вещи подсвечивал / убирал
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +31,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -120,6 +122,7 @@ class CommentControllerTest {
                 .andExpect(status().isOk());
     }
 
+    // FIXME: не отработал на "свежее" окружение (запустил докеры, запустил тест, - этот не проходит
     @Test
     @WithMockUser(username = username, password = password, roles = role)
     void leaveComment_Success() throws Exception {

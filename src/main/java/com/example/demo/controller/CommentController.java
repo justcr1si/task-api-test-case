@@ -33,7 +33,8 @@ public class CommentController {
     /**
      * Метод по получению комментариев по айдишнику задачи
      *
-     * @param taskId
+     * @param taskId FIXME: желательно вкратце указывать, что за параметр, описание(даже если оно избыточно, хуже не
+     *                      будет)
      * @return
      */
     @GetMapping("/task")
