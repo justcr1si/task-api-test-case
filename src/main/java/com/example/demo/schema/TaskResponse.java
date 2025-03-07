@@ -1,6 +1,5 @@
 package com.example.demo.schema;
 
-import com.example.demo.models.Comment;
 import com.example.demo.models.TaskPriority;
 import com.example.demo.models.TaskStatus;
 import io.swagger.v3.oas.annotations.media.Schema;

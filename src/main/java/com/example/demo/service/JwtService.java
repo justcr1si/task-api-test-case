@@ -16,6 +16,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * Сервис по созданию и обработке JWT-токенов
+ */
 @Service
 public class JwtService {
     @Value("${token.signing.key}")
